@@ -1,6 +1,13 @@
+const express = require('express');
+const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
 const cron = require('node-cron');
+
+app.get('/', (req, res) => {
+  res.send('working over here');
+});
+
 async function connectDb() {
   try {
     await mongoose.connect(
@@ -67,4 +74,8 @@ cron.schedule('0 */12 * * *', async () => {
   } catch (err) {
     console.log(err);
   }
+});
+
+app.listen(3000, () => {
+  console.log('working over here');
 });
