@@ -2,11 +2,6 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const mongoose = require('mongoose');
-const cron = require('node-cron');
-
-app.get('/', (req, res) => {
-  res.send('working over here');
-});
 
 async function connectDb() {
   try {
@@ -40,7 +35,6 @@ async function deletePasswordResetToken() {
 }
 
 async function deleteExpiredBookedRooms() {
-  await connectDb();
   const users = mongoose.connection.db.collection('users');
   const rooms = mongoose.connection.db.collection('rooms');
   await rooms.updateMany(
@@ -58,22 +52,17 @@ async function deleteExpiredBookedRooms() {
   );
 }
 
-cron.schedule('0 0 * * sunday', async () => {
-  try {
-    await deleteEmailConfirmToken();
-    await deletePasswordResetToken();
-  } catch (err) {
-    console.log(err);
-  }
+app.get('/delete-token', async (req, res) => {
+  await connectDb();
+  await deleteEmailConfirmToken();
+  await deletePasswordResetToken();
+  res.send('okay');
 });
 
-cron.schedule('0 */12 * * *', async () => {
-  try {
-    await deleteExpiredBookedRooms();
-    console.log('booked rooms deleted');
-  } catch (err) {
-    console.log(err);
-  }
+app.get('/delete-rooms', async (req, res) => {
+  await connectDb();
+  await deleteExpiredBookedRooms();
+  res.send('okay');
 });
 
 app.listen(3000, () => {
