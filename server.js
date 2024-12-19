@@ -39,7 +39,8 @@ async function deleteExpiredBookedRooms() {
   const rooms = mongoose.connection.db.collection('rooms');
   await rooms.updateMany(
     { checkOutDate: { $lt: new Date() } },
-    { $unset: { checkOutDate: '', bookedBy: '', booked: false } }
+    { $set: { booked: false } },
+    { $unset: { checkOutDate: '', bookedBy: '' } }
   );
 
   await users.updateMany(
