@@ -39,7 +39,7 @@ async function deleteExpiredBookedRooms() {
   const rooms = mongoose.connection.db.collection('rooms');
   await rooms.updateMany(
     { checkOutDate: { $lt: new Date() } },
-    { $set: { booked: true }, $unset: { checkOutDate: '', bookedBy: '' } }
+    { $set: { booked: false }, $unset: { checkOutDate: '', bookedBy: '' } }
   );
 
   await users.updateMany(
@@ -65,6 +65,6 @@ app.get('/delete-rooms', async (req, res) => {
   res.send('okay');
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('working over here');
 });
